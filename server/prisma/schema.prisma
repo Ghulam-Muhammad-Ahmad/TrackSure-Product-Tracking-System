@@ -1,0 +1,253 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model tenants {
+  tenant_id   String    @id @default(uuid())
+  tenant_name String    @db.VarChar(100)
+  brandName   String    @default("") // Default empty string for brandName
+  logoUrl     String?   @default("") // Logo image URL with default null
+  redirectUrl String?   @default("") // CTA / target link with default null
+  themeColor  String?   @default("") // HEX color e.g. "#0055aa" with default null
+  description String?   @default("") @db.VarChar(1000) // Optional page text / CTA with default null
+  is_deleted  Int?      @default(0)
+  deleted_at  DateTime? @db.Timestamp(0)
+  created_at  DateTime  @default(now()) @db.Timestamp(0)
+
+  categories       categories[]
+  products         products[]
+  users            users[]
+  roles            roles[]
+  product_status   product_status[]
+  activity_logs    ActivityLog[]
+  document_folders document_folders[] // Added relation to document_folders
+  documents        documents[] // Added relation to documents
+  chats            Chat[]
+}
+
+model categories {
+  category_id   Int       @id @default(autoincrement())
+  category_name String    @db.VarChar(100)
+  is_deleted    Int?      @default(0)
+  deleted_at    DateTime? @db.Timestamp(0)
+  tenant_id     String
+  created_at    DateTime  @default(now()) @db.Timestamp(0)
+
+  tenants  tenants    @relation(fields: [tenant_id], references: [tenant_id], onDelete: Cascade, map: "categories_ibfk_tenant")
+  products products[]
+
+  @@index([tenant_id], map: "tenant_id")
+}
+
+model products {
+  product_id        Int       @id @default(autoincrement())
+  product_name      String    @db.VarChar(100)
+  category_id       Int
+  manufacturer_id   Int
+  current_owner_id  Int
+  tenant_id         String
+  product_status_id Int
+  image_url         String    @default("") @db.VarChar(255)
+  created_at        DateTime? @default(now()) @db.Timestamp(0)
+  updated_at        DateTime? @default(now()) @db.Timestamp(0)
+  is_deleted        Int?      @default(0)
+  deleted_at        DateTime? @db.Timestamp(0)
+
+  categories                             categories     @relation(fields: [category_id], references: [category_id], map: "products_ibfk_1")
+  users_products_manufacturer_idTousers  users          @relation("products_manufacturer_idTousers", fields: [manufacturer_id], references: [user_id], map: "products_ibfk_2")
+  users_products_current_owner_idTousers users          @relation("products_current_owner_idTousers", fields: [current_owner_id], references: [user_id], map: "products_ibfk_3")
+  product_status                         product_status @relation(fields: [product_status_id], references: [id], map: "products_ibfk_5")
+  tenants                                tenants        @relation(fields: [tenant_id], references: [tenant_id], onDelete: Cascade, map: "products_ibfk_tenant")
+  qr_codes                               qr_codes[]
+  documents                              documents[]    @relation("ProductDocuments")
+
+  @@index([tenant_id], map: "tenant_id")
+  @@index([category_id], map: "category_id")
+  @@index([manufacturer_id], map: "manufacturer_id")
+  @@index([current_owner_id], map: "current_owner_id")
+  @@index([product_status_id], map: "product_status_id")
+}
+
+model product_status {
+  id         Int      @id @default(autoincrement())
+  status     String   @db.VarChar(50)
+  color_hex  String?  @default("#6B7280") @db.VarChar(7)
+  tenant_id  String
+  is_deleted Int?     @default(0)
+  created_at DateTime @default(now()) @db.Timestamp(0)
+  updated_at DateTime @default(now()) @db.Timestamp(0)
+
+  tenants  tenants    @relation(fields: [tenant_id], references: [tenant_id], onDelete: Cascade, map: "product_status_ibfk_tenant")
+  products products[]
+
+  @@index([tenant_id], map: "tenant_id")
+}
+
+model roles {
+  role_id     Int       @id @default(autoincrement())
+  role_name   String    @db.VarChar(50)
+  permissions Json      @default("[]")
+  is_deleted  Int?      @default(0)
+  deleted_at  DateTime? @db.Timestamp(0)
+  tenant_id   String
+
+  users   users[] @relation("users_role_idToroles")
+  tenants tenants @relation(fields: [tenant_id], references: [tenant_id], onDelete: Cascade, map: "roles_ibfk_tenant")
+
+  @@index([tenant_id], map: "tenant_id")
+}
+
+model users {
+  user_id         Int       @id @default(autoincrement())
+  username        String    @unique(map: "username") @db.VarChar(50)
+  password_hash   String    @db.VarChar(255)
+  email           String    @unique(map: "email") @db.VarChar(100)
+  location        String    @db.VarChar(50)
+  role_id         Int
+  tenant_id       String
+  created_at      DateTime? @default(now()) @db.Timestamp(0)
+  is_deleted      Int?      @default(0)
+  deleted_at      DateTime? @db.Timestamp(0)
+  first_name      String    @default("") @db.VarChar(50)
+  last_name       String    @default("") @db.VarChar(50)
+  phone_number    String    @default("") @db.VarChar(20)
+  email_verified  Boolean   @default(false)
+  verifying_token String    @default("") @db.VarChar(255)
+
+  tenants                                   tenants        @relation(fields: [tenant_id], references: [tenant_id], onDelete: Cascade, map: "users_ibfk_tenant")
+  roles_users_role_idToroles                roles          @relation("users_role_idToroles", fields: [role_id], references: [role_id], map: "users_ibfk_1")
+  products_products_manufacturer_idTousers  products[]     @relation("products_manufacturer_idTousers")
+  products_products_current_owner_idTousers products[]     @relation("products_current_owner_idTousers")
+  notifications                             Notification[] @relation("user_notifications")
+  documents                                 documents[] // Added relation to documents
+  chats                                     Chat[]
+
+  @@index([tenant_id], map: "tenant_id")
+  @@index([role_id], map: "role_id")
+}
+
+model ActivityLog {
+  id             Int      @id @default(autoincrement())
+  activityName   String
+  userName       String
+  email          String
+  activityDetail String
+  createdAt      DateTime @default(now())
+
+  tenant_id String
+  tenant    tenants @relation(fields: [tenant_id], references: [tenant_id], onDelete: Cascade, map: "activity_log_tenant_fk")
+
+  @@index([tenant_id])
+}
+
+model Notification {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  read        Boolean
+  date        DateTime @default(now())
+  tags        Json     @default("[]")
+  user_id     Int
+
+  user users @relation("user_notifications", fields: [user_id], references: [user_id], onDelete: Cascade, map: "notification_user_ibfk_1")
+}
+
+model qr_codes {
+  qr_id           Int      @id @default(autoincrement())
+  product_id      Int
+  qr_name         String   @db.VarChar(100)
+  view_permission Int // -1 means public, else user_id
+  qr_details      Json // Stores array or object with QR code details
+  qr_image_url    String   @db.VarChar(255)
+  qr_token        String   @default("") @db.VarChar(255) // Added qr_token field
+  created_at      DateTime @default(now()) @db.Timestamp(0)
+
+  products products @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
+
+  @@index([product_id], map: "product_id")
+}
+
+
+model document_folders {
+  folder_id  Int       @id @default(autoincrement())
+  name       String    @db.VarChar(150)
+  parent_id  Int? // for nested folders
+  tenant_id  String
+  created_at DateTime  @default(now()) @db.Timestamp(0)
+  updated_at DateTime  @default(now()) @db.Timestamp(0)
+  is_deleted Int?      @default(0)
+  deleted_at DateTime? @db.Timestamp(0)
+
+  // Relations
+  tenant    tenants            @relation(fields: [tenant_id], references: [tenant_id], onDelete: Cascade, map: "folders_ibfk_tenant")
+  parent    document_folders?  @relation("FolderHierarchy", fields: [parent_id], references: [folder_id])
+  children  document_folders[] @relation("FolderHierarchy")
+  documents documents[] // Added relation to documents
+
+  @@index([tenant_id], map: "tenant_id")
+  @@index([parent_id], map: "parent_id")
+}
+
+model documents {
+  document_id Int      @id @default(autoincrement())
+  filename    String   @db.VarChar(255)
+  file_url    String   @db.VarChar(500) // Storage location (S3, local path, etc.)
+  file_type   String   @db.VarChar(100) // pdf, docx, xlsx, png, jpg, etc.
+  file_size   Int // in bytes (validate against max size, e.g., 20MB)
+  tags        Json     @default("[]") // Array of tags
+  permissions Json     @default("[]") // Access control (user_ids, role_ids, or public)
+  uploaded_at DateTime @default(now()) @db.Timestamp(0)
+
+  // Foreign keys
+  tenant_id   String
+  uploader_id Int
+  product_id  Int?
+  folder_id   Int?
+  is_deleted  Int?      @default(0)
+  deleted_at  DateTime? @db.Timestamp(0)
+
+  // Relations
+  tenant   tenants           @relation(fields: [tenant_id], references: [tenant_id], onDelete: Cascade, map: "documents_ibfk_tenant")
+  uploader users             @relation(fields: [uploader_id], references: [user_id], onDelete: Cascade, map: "documents_ibfk_user")
+  product  products?         @relation("ProductDocuments", fields: [product_id], references: [product_id], onDelete: Cascade, map: "documents_ibfk_product")
+  folder   document_folders? @relation(fields: [folder_id], references: [folder_id], onDelete: Cascade, map: "documents_ibfk_folder")
+
+  @@index([tenant_id], map: "tenant_id")
+  @@index([uploader_id], map: "uploader_id")
+  @@index([product_id], map: "product_id")
+  @@index([folder_id], map: "folder_id")
+}
+
+model Chat {
+  chat_id    Int       @id @default(autoincrement())
+  user_id    Int
+  tenant_id  String
+  title      String    @db.VarChar(255)
+  created_at DateTime  @default(now()) @db.Timestamp(0)
+  updated_at DateTime  @updatedAt @db.Timestamp(0)
+
+  user      users   @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  tenant    tenants @relation(fields: [tenant_id], references: [tenant_id], onDelete: Cascade)
+  messages  Message[]
+
+  @@index([user_id])
+  @@index([tenant_id])
+}
+
+model Message {
+  message_id Int      @id @default(autoincrement())
+  chat_id    Int
+  role       String   @db.VarChar(50) // e.g., "user", "assistant", "system", "tool"
+  content    String   @db.Text
+  created_at DateTime @default(now()) @db.Timestamp(0)
+
+  chat Chat  @relation(fields: [chat_id], references: [chat_id], onDelete: Cascade)
+
+  @@index([chat_id])
+}

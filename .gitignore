@@ -1,0 +1,8 @@
+node_modules
+package-lock.json
+npm-debug.log
+log
+.log
+server/.env
+server/log.log
+server/node_modules

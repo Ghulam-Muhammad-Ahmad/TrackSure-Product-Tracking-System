@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `product_status` ADD COLUMN `created_at` TIMESTAMP(0) NOT NULL DEFAULT CURRENT_TIMESTAMP(0);
