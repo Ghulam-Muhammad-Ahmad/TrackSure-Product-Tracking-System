@@ -3,10 +3,19 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useState } from 'react';
 import { API } from "@/config/api"
 import axios from 'axios'; // Added axios import
+
+// Password validation utility
+function validatePassword(pw) {
+  // Greater than 8 chars, at least one digit and one uppercase
+  const minLength = pw.length > 6;
+  const hasDigit = /\d/.test(pw);
+  const hasUpper = /[A-Z]/.test(pw);
+  return minLength && hasDigit && hasUpper;
+}
 
 export function SignUpForm({
   className,
@@ -25,6 +34,9 @@ export function SignUpForm({
   const [signupError, setSignupError] = useState(null);
   const [signupSuccess, setSignupSuccess] = useState(null);
   const [isLoading, setIsLoading] = useState(false); // Added state for loading
+  const [passwordTouched, setPasswordTouched] = useState(false);
+
+  const isPasswordValid = validatePassword(password);
 
   const handleUsernameChange = async (e) => {
     const newUsername = e.target.value;
@@ -44,9 +56,16 @@ export function SignUpForm({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!isUsernameAvailable) {
       return;
+    }
+
+    if (!validatePassword(password)) {
+      setSignupError("Password must be longer than 8 characters, contain a digit, and an uppercase letter.");
+      return;
+    } else {
+      setSignupError(null);
     }
 
     setIsLoading(true); // Set loading state
@@ -173,10 +192,15 @@ export function SignUpForm({
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="on"
                   required
-                  minLength="6"
+                  minLength="9"
                   className="pr-20"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (!passwordTouched) setPasswordTouched(true);
+                  }}
+                  onBlur={() => setPasswordTouched(true)}
+                  aria-describedby="password-requirements"
                 />
                 <button 
                   type="button" 
@@ -185,8 +209,13 @@ export function SignUpForm({
                 >
                   {showPassword ? 'Hide' : 'Show'}
                 </button>
+                {passwordTouched && password.length > 0 && !isPasswordValid && (
+                  <div className="text-xs text-red-500 mt-1" id="password-requirements">
+                    Password must be longer than 8 characters, include at least one digit and one uppercase letter.
+                  </div>
+                )}
               </div>
-              <Button type="submit" className="w-full cursor-pointer" disabled={isLoading}>
+              <Button type="submit" className="w-full cursor-pointer" disabled={isLoading || !isPasswordValid}>
                 {isLoading ? 'Loading...' : 'Sign Up'}
               </Button>
               {signupError && <div className="text-red-500 text-sm">{signupError}</div>}
@@ -209,8 +238,8 @@ export function SignUpForm({
         </CardContent>
       </Card>
       <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
-        and <a href="#">Privacy Policy</a>.
+        By clicking continue, you agree to our <Link to="/terms-of-service">Terms of Service</Link>{" "}
+        and <Link to="/privacy-policy">Privacy Policy</Link>.
       </div>
     </div>
   )

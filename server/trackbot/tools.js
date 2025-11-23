@@ -30,13 +30,10 @@ import {
 } from "../services/qrCode.service.js";
 
 // New imports for Document Center services (assuming these exist based on client-side context) - Corrected service names
+// Note: Only get operations are allowed for documents and folders - no add/edit/delete
 import {
-  addDocumentService as addDocument,    // Changed from addDocumentService
   getDocumentsService as getDocuments,   // Changed from getDocumentsService
-  updateDocumentService as updateDocument, // Changed from updateDocumentService
-  addFolderService as addFolder,      // Changed from addFolderService
   getFoldersService as getFolders,     // Changed from getFoldersService
-  updateFolderService as updateFolder,   // Changed from updateFolderService
 } from "../services/documentCenter.service.js"; // Assuming a document.service.js
 
 // New imports for Tenant User services - Corrected service names and spelling
@@ -156,9 +153,9 @@ export const CUSTOM_TOOLS = {
         manufacturer_id: { type: "integer", description: "The ID of the product's manufacturer" },
         current_owner_id: { type: "integer", description: "The ID of the product's current owner" },
         product_status_id: { type: "integer", description: "The ID of the product's status" },
-        image_url: { type: "string", description: "The URL of the product's image" },
+        image_url: { type: "string", description: "Optional: The URL of the product's image" },
       },
-      required: ["product_name", "category_id", "manufacturer_id", "current_owner_id", "product_status_id", "image_url"],
+      required: ["product_name", "category_id", "manufacturer_id", "current_owner_id", "product_status_id"],
     },
     execute: async ({ product_name, category_id, manufacturer_id, current_owner_id, product_status_id, image_url, userId, tenantId }) => {
       console.log("Executing createProduct with:", { product_name, category_id, manufacturer_id, current_owner_id, product_status_id, image_url, userId, tenantId });
@@ -195,9 +192,9 @@ export const CUSTOM_TOOLS = {
         manufacturer_id: { type: "integer", description: "The new manufacturer ID for the product" },
         current_owner_id: { type: "integer", description: "The new current owner ID for the product" },
         product_status_id: { type: "integer", description: "The new status ID for the product" },
-        image_url: { type: "string", description: "The new image URL for the product" },
+        image_url: { type: "string", description: "Optional: The new image URL for the product" },
       },
-      required: ["product_id", "product_name", "category_id", "manufacturer_id", "current_owner_id", "product_status_id", "image_url"],
+      required: ["product_id", "product_name", "category_id", "manufacturer_id", "current_owner_id", "product_status_id"],
     },
     execute: async ({ product_id, product_name, category_id, manufacturer_id, current_owner_id, product_status_id, image_url, userId, tenantId }) => {
       console.log("Executing updateProduct with:", { product_id, product_name, category_id, manufacturer_id, current_owner_id, product_status_id, image_url, userId, tenantId });
@@ -227,30 +224,9 @@ export const CUSTOM_TOOLS = {
     },
   },
 
-  // Document Center Tools (Add and Get, no delete) - Updated service calls
-  addDocument: {
-    description: "Uploads a new document to the system. Requires file content in base64 format.",
-    parameters: {
-      type: "object",
-      properties: {
-        filename: { type: "string", description: "The name of the document file." },
-        fileType: { type: "string", description: "The MIME type or file extension of the document (e.g., 'application/pdf', 'image/jpeg')." },
-        fileSize: { type: "integer", description: "The size of the document in bytes." },
-        tags: { type: "string", description: "Comma-separated tags for the document (e.g., 'report,urgent')." },
-        folder_id: { type: "integer", description: "Optional: The ID of the folder to place the document in. If not provided, it will be placed in the root." },
-        product_id: { type: "integer", description: "Optional: The ID of the product this document is related to." },
-        file_content_base64: { type: "string", description: "The base64 encoded content of the file." },
-      },
-      required: ["filename", "fileType", "fileSize", "file_content_base64"],
-    },
-    execute: async ({ filename, fileType, fileSize, tags, folder_id, product_id, file_content_base64, userId, tenantId }) => {
-      console.log("Executing addDocument with:", { filename, fileType, fileSize, tags, folder_id, product_id, userId, tenantId });
-      return await addDocument(userId, tenantId, { filename, fileType, fileSize, tags, folder_id, product_id, file_content_base64 }); // Changed from addDocumentService
-    },
-  },
-
+  // Document Center Tools (Read-only: Get only, no add/edit/delete)
   getDocuments: {
-    description: "Retrieves all documents for the current tenant.",
+    description: "Retrieves all documents for the current tenant. Note: Documents can only be viewed, not added or edited through TrackBot.",
     parameters: {
       type: "object",
       properties: {},
@@ -262,43 +238,8 @@ export const CUSTOM_TOOLS = {
     },
   },
 
-  updateDocument: {
-    description: "Updates an existing document's metadata.",
-    parameters: {
-      type: "object",
-      properties: {
-        document_id: { type: "integer", description: "The ID of the document to update." },
-        filename: { type: "string", description: "The new name of the document file." },
-        tags: { type: "string", description: "Comma-separated tags for the document (e.g., 'report,urgent')." },
-        folder_id: { type: "integer", description: "Optional: The new ID of the folder to place the document in. Use null for root." },
-        product_id: { type: "integer", description: "Optional: The new ID of the product this document is related to." },
-      },
-      required: ["document_id", "filename", "tags"], // Assuming filename and tags are always updated
-    },
-    execute: async ({ document_id, filename, tags, folder_id, product_id, userId, tenantId }) => {
-      console.log("Executing updateDocument with:", { document_id, filename, tags, folder_id, product_id, userId, tenantId });
-      return await updateDocument(userId, tenantId, document_id, { filename, tags, folder_id, product_id }); // Changed from updateDocumentService
-    },
-  },
-
-  addFolder: {
-    description: "Creates a new folder in the document center.",
-    parameters: {
-      type: "object",
-      properties: {
-        folder_name: { type: "string", description: "The name of the new folder." },
-        parent_folder_id: { type: "integer", description: "Optional: The ID of the parent folder. If not provided, the folder will be created at the root level." },
-      },
-      required: ["folder_name"],
-    },
-    execute: async ({ folder_name, parent_folder_id, userId, tenantId }) => {
-      console.log("Executing addFolder with:", { folder_name, parent_folder_id, userId, tenantId });
-      return await addFolder(userId, tenantId, folder_name, parent_folder_id); // Changed from addFolderService
-    },
-  },
-
   getFolders: {
-    description: "Retrieves all folders for the current tenant.",
+    description: "Retrieves all folders for the current tenant. Note: Folders can only be viewed, not added or edited through TrackBot.",
     parameters: {
       type: "object",
       properties: {},
@@ -307,22 +248,6 @@ export const CUSTOM_TOOLS = {
     execute: async ({ userId, tenantId }) => {
       console.log("Executing getFolders with:", { userId, tenantId });
       return await getFolders(userId, tenantId); // Changed from getFoldersService
-    },
-  },
-
-  updateFolder: {
-    description: "Updates an existing folder's name.",
-    parameters: {
-      type: "object",
-      properties: {
-        folder_id: { type: "integer", description: "The ID of the folder to update." },
-        folder_name: { type: "string", description: "The new name for the folder." },
-      },
-      required: ["folder_id", "folder_name"],
-    },
-    execute: async ({ folder_id, folder_name, userId, tenantId }) => {
-      console.log("Executing updateFolder with:", { folder_id, folder_name, userId, tenantId });
-      return await updateFolder(userId, tenantId, folder_id, folder_name); // Changed from updateFolderService
     },
   },
 

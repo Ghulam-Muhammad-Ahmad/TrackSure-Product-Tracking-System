@@ -53,7 +53,7 @@ model products {
   current_owner_id  Int
   tenant_id         String
   product_status_id Int
-  image_url         String    @default("") @db.VarChar(255)
+  image_url         String?   @default("") @db.VarChar(255)
   created_at        DateTime? @default(now()) @db.Timestamp(0)
   updated_at        DateTime? @default(now()) @db.Timestamp(0)
   is_deleted        Int?      @default(0)

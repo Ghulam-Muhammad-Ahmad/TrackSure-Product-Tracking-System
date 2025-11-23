@@ -40,8 +40,7 @@ const createProductService = async (
     !category_id ||
     !manufacturer_id ||
     !current_owner_id ||
-    !product_status_id ||
-    !image_url
+    !product_status_id
   ) {
     return { success: false, message: "Missing required fields" };
   }
@@ -76,7 +75,7 @@ const createProductService = async (
         current_owner_id: parseInt(current_owner_id),
         product_status_id: parseInt(product_status_id),
         tenant_id: tenantId,
-        image_url,
+        image_url: image_url || "",
       },
     });
 
@@ -187,8 +186,7 @@ const updateProductService = async (
     !manufacturer_id ||
     !current_owner_id ||
     !product_status_id ||
-    !userId ||
-    !image_url
+    !userId
   ) {
     return { success: false, message: "Missing required fields" };
   }
@@ -219,7 +217,7 @@ const updateProductService = async (
         manufacturer_id: parseInt(manufacturer_id),
         current_owner_id: parseInt(current_owner_id),
         product_status_id,
-        image_url,
+        image_url: image_url || "",
       },
     });
 

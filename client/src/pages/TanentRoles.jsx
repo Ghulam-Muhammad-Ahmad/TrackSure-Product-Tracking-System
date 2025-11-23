@@ -14,41 +14,42 @@ const columnsConfigRaw = [
     canEdit: true,
     canShow: true,
     groupData: [
-      { label: "Create Product", value: "PRODUCT_CREATE" },
-      { label: "Read Product", value: "PRODUCT_READ" },
-      { label: "Update Product", value: "PRODUCT_UPDATE" },
-      { label: "Delete Product", value: "PRODUCT_DELETE" },
+      { label: "Create Product", value: "PRODUCT_CREATE", group: "Product" },
+      { label: "Read Product", value: "PRODUCT_READ", group: "Product" },
+      { label: "Update Product", value: "PRODUCT_UPDATE", group: "Product" },
+      { label: "Delete Product", value: "PRODUCT_DELETE", group: "Product" },
     
-      { label: "Create Product Status", value: "PRODUCT_STATUS_CREATE" },
-      { label: "Read Product Status", value: "PRODUCT_STATUS_READ" },
-      { label: "Update Product Status", value: "PRODUCT_STATUS_UPDATE" },
-      { label: "Delete Product Status", value: "PRODUCT_STATUS_DELETE" },
+      { label: "Create Product Status", value: "PRODUCT_STATUS_CREATE", group: "Product Status" },
+      { label: "Read Product Status", value: "PRODUCT_STATUS_READ", group: "Product Status" },
+      { label: "Update Product Status", value: "PRODUCT_STATUS_UPDATE", group: "Product Status" },
+      { label: "Delete Product Status", value: "PRODUCT_STATUS_DELETE", group: "Product Status" },
     
-      { label: "Create Category", value: "CATEGORY_CREATE" },
-      { label: "Read Category", value: "CATEGORY_READ" },
-      { label: "Update Category", value: "CATEGORY_UPDATE" },
-      { label: "Delete Category", value: "CATEGORY_DELETE" },
+      { label: "Create Category", value: "CATEGORY_CREATE", group: "Category" },
+      { label: "Read Category", value: "CATEGORY_READ", group: "Category" },
+      { label: "Update Category", value: "CATEGORY_UPDATE", group: "Category" },
+      { label: "Delete Category", value: "CATEGORY_DELETE", group: "Category" },
     
-      { label: "Create Role", value: "ROLE_CREATE" },
-      { label: "Read Role", value: "ROLE_READ" },
-      { label: "Update Role", value: "ROLE_UPDATE" },
-      { label: "Delete Role", value: "ROLE_DELETE" },
+      { label: "Create Role", value: "ROLE_CREATE", group: "Role" },
+      { label: "Read Role", value: "ROLE_READ", group: "Role" },
+      { label: "Update Role", value: "ROLE_UPDATE", group: "Role" },
+      { label: "Delete Role", value: "ROLE_DELETE", group: "Role" },
     
-      { label: "Create User", value: "USER_CREATE" },
-      { label: "Read User", value: "USER_READ" },
-      { label: "Update User", value: "USER_UPDATE" },
-      { label: "Delete User", value: "USER_DELETE" },
+      { label: "Create User", value: "USER_CREATE", group: "User" },
+      { label: "Read User", value: "USER_READ", group: "User" },
+      { label: "Update User", value: "USER_UPDATE", group: "User" },
+      { label: "Delete User", value: "USER_DELETE", group: "User" },
 
-      { label: "Create Document", value: "DOCUMENT_CREATE" },
-      { label: "Read Document", value: "DOCUMENT_READ" },
-      { label: "Update Document", value: "DOCUMENT_UPDATE" },
-      { label: "Delete Document", value: "DOCUMENT_DELETE" },
+      { label: "Create Document", value: "DOCUMENT_CREATE", group: "Document" },
+      { label: "Read Document", value: "DOCUMENT_READ", group: "Document" },
+      { label: "Update Document", value: "DOCUMENT_UPDATE", group: "Document" },
+      { label: "Delete Document", value: "DOCUMENT_DELETE", group: "Document" },
     
-      { label: "Create Document Folder", value: "DOCUMENT_FOLDER_CREATE" },
-      { label: "Read Document Folder", value: "DOCUMENT_FOLDER_READ" },
-      { label: "Update Document Folder", value: "DOCUMENT_FOLDER_UPDATE" },
-      { label: "Delete Document Folder", value: "DOCUMENT_FOLDER_DELETE" }
-    ]    
+      { label: "Create Document Folder", value: "DOCUMENT_FOLDER_CREATE", group: "Document Folder" },
+      { label: "Read Document Folder", value: "DOCUMENT_FOLDER_READ", group: "Document Folder" },
+      { label: "Update Document Folder", value: "DOCUMENT_FOLDER_UPDATE", group: "Document Folder" },
+      { label: "Delete Document Folder", value: "DOCUMENT_FOLDER_DELETE", group: "Document Folder" }
+    ],
+    renderAsTable: true // Flag to indicate this should render as a table
   } 
 ];
 

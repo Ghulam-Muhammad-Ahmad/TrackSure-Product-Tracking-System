@@ -94,8 +94,6 @@ function HomePage() {
     }
   ];
 
-
-
   return (
     <div className="min-h-screen bg-background">
       <Navbar1 />
@@ -118,8 +116,8 @@ function HomePage() {
               Comprehensive product tracking solution with powerful features designed for modern supply chains.
             </p>
           </div>
-
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* @HomePage.jsx (121) --- Add one more feature card in the first section right */}
             {features.map((feature, index) => (
               <Card key={index} className="border-2 hover:border-primary transition-colors">
                 <CardHeader>
@@ -343,7 +341,7 @@ function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 bg-muted/50 border-t">
+      <footer className="py-12 bg-white border-t">
         <div className="container">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
             <div className="text-center sm:text-left">

@@ -27,7 +27,7 @@ const Hero1 = ({
             <div className="container">
                 <div className="flex items-center gap-8">
                     {/* Content Section */}
-                    <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
+                    <div className="flex w-[60%] flex-col items-center text-center lg:items-start lg:text-left">
                         {badge && (
                             <Badge variant="outline" className="flex items-center gap-2">
                                 {badge}
@@ -60,6 +60,7 @@ const Hero1 = ({
                             )}
                         </div>
                     </div>
+                    <div className="w-[40%]"><img src="/headingsvg.svg" className="w-full "/></div>
                 </div>
             </div>
         </section>

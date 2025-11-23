@@ -266,7 +266,7 @@ export default function TrackBot() {
     <div className="trackbot-body">
       <div className="p-4 flex gap-4 justify-start overflow-hidden w-full">
         {/* LEFT: Sidebar */}
-        <div className="w-[20%]">
+        <div className="w-[25%]">
           <Card className="h-full flex flex-col">
             <CardHeader>
               <div className="flex items-center justify-between gap-2">

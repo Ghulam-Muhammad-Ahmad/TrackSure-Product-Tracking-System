@@ -14,7 +14,7 @@ import jwt from 'jsonwebtoken';
         return res.status(401).json({ error: 'Invalid user ID' });
       }
       const { product_name, category_id, manufacturer_id, current_owner_id, product_status_id, image_url } = req.body;
-      if (!product_name || !category_id || !manufacturer_id || !current_owner_id || !product_status_id || !image_url) {
+      if (!product_name || !category_id || !manufacturer_id || !current_owner_id || !product_status_id) {
         return res.status(400).json({ error: 'Missing required fields' });
       }
       const result = await createProductService(userId, product_name, category_id, manufacturer_id, current_owner_id, product_status_id, image_url, tenantId);
@@ -46,7 +46,7 @@ import jwt from 'jsonwebtoken';
         return res.status(401).json({ error: 'Invalid user ID' });
       }
       const { product_id, product_name, category_id, manufacturer_id, current_owner_id, product_status_id, image_url } = req.body;
-      if (!product_id || !product_name || !category_id || !manufacturer_id || !current_owner_id || !product_status_id || !image_url) {
+      if (!product_id || !product_name || !category_id || !manufacturer_id || !current_owner_id || !product_status_id) {
         return res.status(400).json({ error: 'Missing required fields' });
       }
       const result = await updateProductService(product_id, product_name, category_id, manufacturer_id, current_owner_id, product_status_id, image_url, userId, tenantId);

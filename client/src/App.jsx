@@ -25,6 +25,8 @@ import NotFoundPage from './pages/NotFoundPage';
 import DocumentCenter from './pages/DocumentCenter';
 import DocumentViewerPage from './pages/DocumentViewerPage';
 import TrackBot from './pages/TrackBot';
+import TermsOfService from './pages/TermsOfService';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 
 // --- Public wrapper for /scan/:tenantId?token=... ---
 function PublicScanRoute() {
@@ -47,6 +49,8 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/logout" element={<LogoutPage />} />
+        <Route path="/terms-of-service" element={<TermsOfService />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
         {/* New Public Scan Route: /scan/{tanentId}/?token={token} */}
         <Route path="/scan/:tenantId" element={<PublicScanRoute />} />
